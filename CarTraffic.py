@@ -2,6 +2,7 @@ import pygame
 import random
 import time
 
+# Consts - Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -9,24 +10,27 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
 colors = [WHITE, BLACK, RED, GREEN, BLUE]
-WIDTH = 800  # ширина игрового окна
-HEIGHT = 800 # высота игрового окна
-FPS = 30 # частота кадров в секунду
+WIDTH = 800  # width of the screen
+HEIGHT = 800 # heigh of the screen
+FPS = 30 # frames per seconds
 
-pygame.init()
+pygame.init() # start a pygame library
 pygame.mixer.init()
-screen = pygame.display.set_mode((WIDTH,HEIGHT))
-pygame.display.set_caption("Fool")
-clock = pygame.time.Clock()
+screen = pygame.display.set_mode((WIDTH,HEIGHT)) # create the screen, where there will be our game
+pygame.display.set_caption("Car Racer") # the nmae of the game 
+clock = pygame.time.Clock() # getting time for our FPS
 
-back = pygame.image.load("background.png").convert_alpha()
+back = pygame.image.load("background.png").convert_alpha() # backround of the game
 backR = back.get_rect()
+
 carsImage = ("car1.png","car2.png","car3.png")
-cars_surf = [pygame.image.load(car).convert_alpha() for car in carsImage]
-def speedOFCars() -> int:
+cars_surf = [pygame.image.load(car).convert_alpha() for car in carsImage] # after curs_surf will be the list of the car's surfaces
+
+def appearanceCars() -> int: # the speed of appearance of the cars
     return 1200
-spawnCars = pygame.USEREVENT + 0
-pygame.time.set_timer(spawnCars, speedOFCars())
+    
+spawnCars = pygame.USEREVENT + 0 # creating the user's event
+pygame.time.set_timer(spawnCars, appearanceCars())
 stop = ""
 class Player(pygame.sprite.Sprite):
     def __init__(self,surf,group):
@@ -72,21 +76,23 @@ def timer(currentTime):
         tR = text.get_rect(center = (400, 400))
         screen.blit(text, tR )
 
-cars = pygame.sprite.Group()
-player = pygame.sprite.Group()
-Car(random.randint(1,800), random.choice(cars_surf),cars)
-p = Player(cars_surf[0], player)
-screen.blit(back, backR)
+cars = pygame.sprite.Group() # creating a group of the car sprites
+player = pygame.sprite.Group() # creating a player's group 
 
-def collision():
+Car(random.randint(1,800), random.choice(cars_surf),cars) # creating the instance of the class Car(the first car)
+p = Player(cars_surf[0], player) # creating the instance of the class Player
+
+screen.blit(back, backR) # drawinng the background
+
+def collision(): # to define collision of the cars 
     global stop
     for car in cars:
         if p.rect.colliderect(car.rect):
-            stop = "STOP"
+            stop = "STOP" # game lose
 
 # Game
 playing = True
-startGame = time.time()
+startGame = time.time() # the start of the game timer
 while playing:
     # Events
     for event in pygame.event.get():
@@ -94,7 +100,7 @@ while playing:
             playing = False
         elif event.type == spawnCars:
             if stop != "STOP":
-                Car(random.randint(1,800), random.choice(cars_surf),cars)
+                Car(random.randint(1,800), random.choice(cars_surf),cars) # appearance a new car
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 p.move = "Left"
@@ -103,22 +109,22 @@ while playing:
         elif event.type == pygame.KEYUP:
             p.move = ""
 
-    collision()
+    collision() # updating the function
 
-    screen.blit(back, backR)
+    screen.blit(back, backR) # drawing the background
 
-    player.draw(screen)
+    player.draw(screen) # drawing the player
 
-    cars.draw(screen)
+    cars.draw(screen) # drawing the cars
 
-    timer(int(time.time() - startGame))
+    timer(int(time.time() - startGame)) # updating the function
 
-    pygame.display.update()
+    pygame.display.update() # updating the screen
+ 
+    clock.tick(FPS) # FPS control
 
-    clock.tick(FPS)
-
-    cars.update()
-
-    player.update()
+    cars.update() # updating the screen
+ 
+    player.update() # updating the screen
 
 pygame.quit()
